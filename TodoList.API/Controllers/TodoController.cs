@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TodoList.API.Data;
-using TodoList.Models;
+using TodoList.API.Data;  // Namespace for the DbContext
+using TodoList.Models;    // Namespace for the ToDoItem model
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TodoList.API.Controllers
 {
@@ -23,7 +25,7 @@ namespace TodoList.API.Controllers
             return await _context.ToDoItems.Where(t => t.CompletedDate == null).ToListAsync();
         }
 
-        // GET: api/todo/5
+        // GET: api/todo/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<ToDoItem>> GetToDoItem(int id)
         {
@@ -38,8 +40,9 @@ namespace TodoList.API.Controllers
         }
 
         // POST: api/todo
+        
         [HttpPost]
-        public async Task<ActionResult<ToDoItem>> PostToDoItem(ToDoItem toDoItem)
+        public async Task<ActionResult<TodoList.Models.ToDoItem>> PostToDoItem(TodoList.Models.ToDoItem toDoItem)
         {
             _context.ToDoItems.Add(toDoItem);
             await _context.SaveChangesAsync();
@@ -47,18 +50,35 @@ namespace TodoList.API.Controllers
             return CreatedAtAction(nameof(GetToDoItem), new { id = toDoItem.Id }, toDoItem);
         }
 
-        // POST: api/todo/complete/5
-        [HttpPost("complete/{id}")]
-        public async Task<IActionResult> CompleteToDoItem(int id)
+
+        // PUT: api/todo/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCompletedDate(int id)
         {
             var toDoItem = await _context.ToDoItems.FindAsync(id);
-
             if (toDoItem == null)
             {
                 return NotFound();
             }
 
-            toDoItem.CompletedDate = DateTime.UtcNow;
+            // Update the CompletedDate to the current date and time
+            toDoItem.CompletedDate = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // DELETE: api/todo/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteToDoItem(int id)
+        {
+            var toDoItem = await _context.ToDoItems.FindAsync(id);
+            if (toDoItem == null)
+            {
+                return NotFound();
+            }
+
+            _context.ToDoItems.Remove(toDoItem);
             await _context.SaveChangesAsync();
 
             return NoContent();

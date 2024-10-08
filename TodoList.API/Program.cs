@@ -17,7 +17,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage(); // Changed to Developer Exception Page for development environment
+    app.UseDeveloperExceptionPage(); // Developer Exception Page for development environment
 
     // Enable Swagger in development
     app.UseSwagger();
@@ -26,7 +26,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
